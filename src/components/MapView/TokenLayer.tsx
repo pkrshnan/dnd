@@ -1,7 +1,5 @@
-import { useMemo } from 'react';
 import { useStore } from '../../store/useStore';
 import { Token } from './Token';
-import { detectFlanking } from '../../utils/flankingUtils';
 
 export function TokenLayer() {
   const tokens = useStore((s) => s.tokens);
@@ -15,9 +13,6 @@ export function TokenLayer() {
     combatActive && combatants.length > 0
       ? combatants[currentTurnIndex % combatants.length]?.tokenId
       : undefined;
-
-  // Recompute flanking whenever token positions change
-  const { flankedIds, flankingIds } = useMemo(() => detectFlanking(tokens), [tokens]);
 
   return (
     <div
@@ -36,8 +31,6 @@ export function TokenLayer() {
           key={token.id}
           token={token}
           isActiveTurn={combatActive && activeTokenId === token.id}
-          isFlanking={flankingIds.has(token.id)}
-          isFlanked={flankedIds.has(token.id)}
         />
       ))}
     </div>

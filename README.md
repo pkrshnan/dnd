@@ -21,12 +21,6 @@ Add draggable tokens for players and enemies. Each token shows the character's i
 - **Enemies** — red-accented ring
 - **Active turn** — gold pulsing ring
 
-### Flanking Detection
-Tokens automatically detect flanking: when two tokens on the same side bracket an enemy on opposite sides (angle ≥ 120°), all three are highlighted in real time as you drag tokens around the map.
-
-- **Cyan ⚔ ring** — this token is flanking (has advantage on attacks)
-- **Orange ⚠ ring** — this token is being flanked (opponents have advantage)
-
 ### Initiative Tracker
 A BG3-style sidebar tracking turn order for combat. Add combatants with a name, initiative roll, and optional link to a map token. The active combatant's linked token gets a gold glow on the map.
 

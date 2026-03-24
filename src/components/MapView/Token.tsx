@@ -2,18 +2,26 @@ import { useState, useCallback } from 'react';
 import { useStore } from '../../store/useStore';
 import type { Token as TokenType } from '../../store/useStore';
 import { useDrag } from '../../hooks/useDrag';
-import { getTokenLabel } from '../../utils/flankingUtils';
 
 const TOKEN_SIZE = 40;
+
+function getTokenLabel(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  const firstChar = parts[0][0].toUpperCase();
+  const lastPart = parts[parts.length - 1];
+  if (/^\d+$/.test(lastPart)) {
+    return (firstChar + lastPart).slice(0, 3);
+  }
+  return (firstChar + lastPart[0]).toUpperCase();
+}
 
 interface Props {
   token: TokenType;
   isActiveTurn: boolean;
-  isFlanking: boolean;  // this token is part of a flanking pair (has advantage)
-  isFlanked: boolean;   // this token is being flanked (defenders have disadvantage)
 }
 
-export function Token({ token, isActiveTurn, isFlanking, isFlanked }: Props) {
+export function Token({ token, isActiveTurn }: Props) {
   const removeToken = useStore((s) => s.removeToken);
   const { onPointerDown, onPointerMove, onPointerUp } = useDrag(token.id);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
@@ -32,30 +40,14 @@ export function Token({ token, isActiveTurn, isFlanking, isFlanked }: Props) {
   const label = getTokenLabel(token.name);
   const isAlly = token.type === 'ally';
   const borderColor = isAlly ? 'var(--ally-color)' : 'var(--enemy-color)';
+  const glowColor = isAlly ? 'var(--ally-glow)' : 'var(--enemy-glow)';
 
-  // Determine box-shadow based on state priority: active turn > flanking/flanked > default
-  let boxShadow: string;
-  let animation: string | undefined;
-
-  if (isActiveTurn) {
-    const baseGlow = isAlly ? 'var(--ally-glow)' : 'var(--enemy-glow)';
-    boxShadow = `0 0 0 3px var(--accent-gold), 0 0 18px 6px var(--accent-gold-glow), 0 0 6px 2px ${baseGlow}`;
-  } else if (isFlanking) {
-    // Attacker with flanking advantage — cyan pulsing ring
-    boxShadow = `0 0 0 3px var(--flank-color), 0 0 14px 5px var(--flank-glow)`;
-    animation = 'flank-pulse 1.4s ease-in-out infinite';
-  } else if (isFlanked) {
-    // Being flanked — orange warning pulse
-    boxShadow = `0 0 0 3px var(--flanked-color), 0 0 14px 5px var(--flanked-glow)`;
-    animation = 'flanked-pulse 1s ease-in-out infinite';
-  } else {
-    const baseGlow = isAlly ? 'var(--ally-glow)' : 'var(--enemy-glow)';
-    boxShadow = `0 0 6px 2px ${baseGlow}`;
-  }
+  const boxShadow = isActiveTurn
+    ? `0 0 0 3px var(--accent-gold), 0 0 18px 6px var(--accent-gold-glow), 0 0 6px 2px ${glowColor}`
+    : `0 0 6px 2px ${glowColor}`;
 
   return (
     <>
-      {/* Wrapper — positioned at token coords, no overflow:hidden so the label is visible */}
       <div
         style={{
           position: 'absolute',
@@ -66,7 +58,7 @@ export function Token({ token, isActiveTurn, isFlanking, isFlanked }: Props) {
           zIndex: 2,
         }}
       >
-        {/* Circle — the draggable interactive element */}
+        {/* Circle */}
         <div
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
@@ -86,8 +78,7 @@ export function Token({ token, isActiveTurn, isFlanking, isFlanked }: Props) {
             pointerEvents: 'auto',
             overflow: 'hidden',
             boxShadow,
-            animation,
-            transition: isActiveTurn || isFlanking || isFlanked ? undefined : 'box-shadow 0.2s',
+            transition: 'box-shadow 0.2s',
             fontSize: label.length > 2 ? 10 : 13,
             fontWeight: 700,
             color: '#fff',
@@ -107,59 +98,7 @@ export function Token({ token, isActiveTurn, isFlanking, isFlanked }: Props) {
           )}
         </div>
 
-        {/* Flanking badges */}
-        {isFlanking && !isActiveTurn && (
-          <div
-            style={{
-              position: 'absolute',
-              top: -6,
-              right: -6,
-              width: 14,
-              height: 14,
-              borderRadius: '50%',
-              background: 'var(--flank-color)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 8,
-              color: '#000',
-              fontWeight: 900,
-              pointerEvents: 'none',
-              zIndex: 3,
-              boxShadow: '0 0 4px var(--flank-glow)',
-            }}
-            title="Flanking — advantage on attacks"
-          >
-            ⚔
-          </div>
-        )}
-        {isFlanked && (
-          <div
-            style={{
-              position: 'absolute',
-              top: -6,
-              left: -6,
-              width: 14,
-              height: 14,
-              borderRadius: '50%',
-              background: 'var(--flanked-color)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 8,
-              color: '#000',
-              fontWeight: 900,
-              pointerEvents: 'none',
-              zIndex: 3,
-              boxShadow: '0 0 4px var(--flanked-glow)',
-            }}
-            title={isAlly ? 'Flanked — enemies have advantage!' : 'Flanked by allies'}
-          >
-            ⚠
-          </div>
-        )}
-
-        {/* Name label below the circle */}
+        {/* Name label below */}
         <div
           style={{
             position: 'absolute',

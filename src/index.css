@@ -27,10 +27,6 @@
 
   --fog-color: rgba(8, 8, 20, 0.92);
 
-  --flank-color: #00bcd4;
-  --flank-glow: rgba(0, 188, 212, 0.55);
-  --flanked-color: #ff9800;
-  --flanked-glow: rgba(255, 152, 0, 0.55);
 
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -70,17 +66,6 @@ button {
 input, select {
   font-family: inherit;
   font-size: inherit;
-}
-
-/* Flanking animations */
-@keyframes flank-pulse {
-  0%, 100% { box-shadow: 0 0 0 3px var(--flank-color), 0 0 14px 5px var(--flank-glow); }
-  50%       { box-shadow: 0 0 0 3px var(--flank-color), 0 0 22px 8px var(--flank-glow); }
-}
-
-@keyframes flanked-pulse {
-  0%, 100% { box-shadow: 0 0 0 3px var(--flanked-color), 0 0 14px 5px var(--flanked-glow); }
-  50%       { box-shadow: 0 0 0 3px var(--flanked-color), 0 0 22px 8px var(--flanked-glow); }
 }
 
 /* Scrollbar styling */
