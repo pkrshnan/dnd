@@ -36,6 +36,8 @@ interface StoreState {
 
   // Fog (for save/load serialization only — canvas is live source of truth)
   fogData: number[] | null;
+  // Incremented after each brush stroke so components can react to fog changes
+  fogRevision: number;
 
   // Tokens
   tokens: Token[];
@@ -54,6 +56,7 @@ interface StoreState {
   setActiveTool: (tool: ToolMode) => void;
   setFogBrushSize: (size: number) => void;
   setFogData: (data: number[] | null) => void;
+  incrementFogRevision: () => void;
 
   // Token actions
   addToken: (token: Token) => void;
@@ -91,6 +94,7 @@ export const useStore = create<StoreState>((set, get) => ({
   activeTool: 'pointer',
   fogBrushSize: persisted?.fogBrushSize ?? 40,
   fogData: persisted?.fogData ?? null,
+  fogRevision: 0,
   tokens: persisted?.tokens ?? [],
   combatants: persisted?.combatants ?? [],
   currentTurnIndex: persisted?.currentTurnIndex ?? 0,
@@ -118,6 +122,7 @@ export const useStore = create<StoreState>((set, get) => ({
     set({ fogData: data });
     persist(get());
   },
+  incrementFogRevision: () => set((s) => ({ fogRevision: s.fogRevision + 1 })),
 
   addToken: (token) => {
     set((s) => ({ tokens: [...s.tokens, token] }));

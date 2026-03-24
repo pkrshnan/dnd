@@ -3,6 +3,9 @@ import { useStore } from '../store/useStore';
 
 const FOG_COLOR = 'rgba(8, 8, 20, 0.94)';
 
+/** Module-level ref so TokenLayer / InitiativeTracker can read fog pixel data */
+export const fogCanvasRef: { current: HTMLCanvasElement | null } = { current: null };
+
 export function useFogPainter(canvasRef: React.RefObject<HTMLCanvasElement | null>) {
   const mapWidth = useStore((s) => s.mapWidth);
   const mapHeight = useStore((s) => s.mapHeight);
@@ -11,6 +14,7 @@ export function useFogPainter(canvasRef: React.RefObject<HTMLCanvasElement | nul
   const fogBrushSize = useStore((s) => s.fogBrushSize);
   const fogData = useStore((s) => s.fogData);
   const setFogData = useStore((s) => s.setFogData);
+  const incrementFogRevision = useStore((s) => s.incrementFogRevision);
 
   const isDrawingRef = useRef(false);
   const initializedRef = useRef(false);
@@ -36,9 +40,11 @@ export function useFogPainter(canvasRef: React.RefObject<HTMLCanvasElement | nul
     canvas.width = mapWidth;
     canvas.height = mapHeight;
 
+    // Expose canvas to other components
+    fogCanvasRef.current = canvas;
+
     const ctx = canvas.getContext('2d')!;
 
-    // New map loaded — restore fog data or fill fresh
     if (mapImageUrl !== lastMapUrlRef.current) {
       lastMapUrlRef.current = mapImageUrl;
       initializedRef.current = false;
@@ -46,7 +52,6 @@ export function useFogPainter(canvasRef: React.RefObject<HTMLCanvasElement | nul
 
     if (!initializedRef.current) {
       if (fogData && fogData.length === mapWidth * mapHeight * 4) {
-        // Restore saved fog
         const imageData = ctx.createImageData(mapWidth, mapHeight);
         imageData.data.set(fogData);
         ctx.putImageData(imageData, 0, 0);
@@ -55,6 +60,7 @@ export function useFogPainter(canvasRef: React.RefObject<HTMLCanvasElement | nul
         saveFog(ctx, mapWidth, mapHeight, setFogData);
       }
       initializedRef.current = true;
+      incrementFogRevision();
     }
   }, [mapWidth, mapHeight, mapImageUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -66,12 +72,10 @@ export function useFogPainter(canvasRef: React.RefObject<HTMLCanvasElement | nul
       if (!ctx) return;
 
       const rect = canvas.getBoundingClientRect();
-      // Convert from screen coords to canvas (map) coords, accounting for zoom
       const x = (e.clientX - rect.left) / mapZoom;
       const y = (e.clientY - rect.top) / mapZoom;
 
       ctx.save();
-
       if (activeTool === 'fog-reveal') {
         ctx.globalCompositeOperation = 'destination-out';
         ctx.fillStyle = 'rgba(0,0,0,1)';
@@ -79,7 +83,6 @@ export function useFogPainter(canvasRef: React.RefObject<HTMLCanvasElement | nul
         ctx.globalCompositeOperation = 'source-over';
         ctx.fillStyle = FOG_COLOR;
       }
-
       ctx.beginPath();
       ctx.arc(x, y, fogBrushSize, 0, Math.PI * 2);
       ctx.fill();
@@ -111,24 +114,23 @@ export function useFogPainter(canvasRef: React.RefObject<HTMLCanvasElement | nul
       if (!isDrawingRef.current) return;
       isDrawingRef.current = false;
       canvasRef.current?.releasePointerCapture(e.pointerId);
-      // Save fog state
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
       saveFog(ctx, mapWidth, mapHeight, setFogData);
+      // Notify components that fog has changed
+      incrementFogRevision();
     },
-    [canvasRef, mapWidth, mapHeight, setFogData]
+    [canvasRef, mapWidth, mapHeight, setFogData, incrementFogRevision]
   );
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     canvas.addEventListener('pointerdown', handlePointerDown);
     canvas.addEventListener('pointermove', handlePointerMove);
     canvas.addEventListener('pointerup', handlePointerUp);
-
     return () => {
       canvas.removeEventListener('pointerdown', handlePointerDown);
       canvas.removeEventListener('pointermove', handlePointerMove);

@@ -1,18 +1,42 @@
 import { useEffect, useRef } from 'react';
 import { useStore } from '../../store/useStore';
 import { InitiativeEntry } from './InitiativeEntry';
+import { fogCanvasRef } from '../../hooks/useFogPainter';
+import { isEnemyRevealed } from '../../utils/fogUtils';
 import './InitiativeTracker.css';
 
 export function InitiativeTracker() {
   const combatants = useStore((s) => s.combatants);
+  const tokens = useStore((s) => s.tokens);
   const combatActive = useStore((s) => s.combatActive);
   const currentTurnIndex = useStore((s) => s.currentTurnIndex);
   const nextTurn = useStore((s) => s.nextTurn);
   const startCombat = useStore((s) => s.startCombat);
   const endCombat = useStore((s) => s.endCombat);
   const removeCombatant = useStore((s) => s.removeCombatant);
+  // Subscribe to fogRevision so we re-render whenever fog is painted
+  useStore((s) => s.fogRevision);
 
   const listRef = useRef<HTMLDivElement>(null);
+
+  // Only show a combatant if:
+  // - they are an ally, OR
+  // - they have no linked token (position unknown — always show), OR
+  // - their linked token is revealed (fog cleared at that position)
+  const visibleCombatants = combatants.filter((c) => {
+    if (c.type === 'ally') return true;
+    if (!c.tokenId) return true;
+    const token = tokens.find((t) => t.id === c.tokenId);
+    if (!token) return true;
+    return isEnemyRevealed(token, fogCanvasRef.current);
+  });
+
+  // currentTurnIndex tracks position in the full combatants array.
+  // We need the index within visibleCombatants for highlighting.
+  const activeCombatantId =
+    combatActive && combatants.length > 0
+      ? combatants[currentTurnIndex % combatants.length]?.id
+      : undefined;
 
   // Scroll active combatant into view on turn change
   useEffect(() => {
@@ -47,7 +71,7 @@ export function InitiativeTracker() {
         )}
       </div>
 
-      {combatants.length === 0 ? (
+      {visibleCombatants.length === 0 ? (
         <div className="initiative-empty">
           <p>No combatants</p>
           <p className="initiative-empty-hint">
@@ -56,11 +80,11 @@ export function InitiativeTracker() {
         </div>
       ) : (
         <div className="initiative-list" ref={listRef}>
-          {combatants.map((combatant, index) => (
+          {visibleCombatants.map((combatant) => (
             <InitiativeEntry
               key={combatant.id}
               combatant={combatant}
-              isActive={combatActive && index === currentTurnIndex % combatants.length}
+              isActive={combatActive && combatant.id === activeCombatantId}
               onRemove={() => removeCombatant(combatant.id)}
             />
           ))}
