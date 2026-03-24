@@ -1,0 +1,30 @@
+.app {
+  display: grid;
+  grid-template-rows: 48px 1fr;
+  grid-template-columns: 1fr 300px;
+  grid-template-areas:
+    "toolbar toolbar"
+    "map     initiative";
+  width: 100%;
+  height: 100%;
+  background: var(--bg-darkest);
+}
+
+.app-toolbar {
+  grid-area: toolbar;
+}
+
+.app-map {
+  grid-area: map;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg-darkest);
+}
+
+.app-initiative {
+  grid-area: initiative;
+  border-left: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}

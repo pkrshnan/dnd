@@ -1,0 +1,54 @@
+.mapview-viewport {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg-darkest);
+  user-select: none;
+}
+
+.mapview-world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+}
+
+.mapview-bg {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.mapview-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-darkest);
+}
+
+.mapview-empty-content {
+  text-align: center;
+  color: var(--text-dim);
+}
+
+.mapview-empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+
+.mapview-empty-content p {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.mapview-empty-hint {
+  font-size: 13px !important;
+  color: var(--text-dim) !important;
+}
