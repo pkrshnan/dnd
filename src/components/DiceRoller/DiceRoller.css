@@ -1,0 +1,262 @@
+/* DiceRoller Panel */
+.dice-roller {
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  flex-shrink: 0;
+}
+
+.dice-roller-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.dice-roller-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+}
+
+/* Dice buttons row */
+.dice-buttons {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.dice-btn {
+  flex: 1;
+  min-width: 34px;
+  padding: 5px 2px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.dice-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-light);
+  color: var(--text-primary);
+}
+
+.dice-btn--active {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  box-shadow: 0 0 6px var(--accent-gold-glow);
+}
+
+/* Controls row */
+.dice-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.dice-label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  flex: 1;
+}
+
+.dice-input {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 4px 6px;
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
+}
+
+.dice-input:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+}
+
+/* Advantage row */
+.advantage-row {
+  display: flex;
+  gap: 4px;
+}
+
+.adv-btn {
+  flex: 1;
+  padding: 5px 4px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.adv-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-light);
+  color: var(--text-primary);
+}
+
+.adv-btn--active {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+/* Roll button */
+.roll-btn {
+  width: 100%;
+  padding: 9px 12px;
+  background: var(--accent-gold);
+  border: none;
+  border-radius: var(--radius-md);
+  color: #1a1400;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.roll-btn:hover {
+  background: #dbb85a;
+  box-shadow: 0 0 12px var(--accent-gold-glow);
+}
+
+.roll-btn:active {
+  background: var(--accent-gold-dim);
+}
+
+/* Result display */
+.dice-result {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.dice-result--nat20 {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 10px var(--accent-gold-glow);
+}
+
+.dice-result--nat1 {
+  border-color: var(--enemy-color);
+  box-shadow: 0 0 8px var(--enemy-glow);
+}
+
+.dice-result-total {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--accent-gold);
+  text-shadow: 0 0 12px var(--accent-gold-glow);
+  line-height: 1.1;
+}
+
+.dice-result--nat1 .dice-result-total {
+  color: var(--enemy-color);
+  text-shadow: 0 0 10px var(--enemy-glow);
+}
+
+.dice-result-adv {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.roll-used {
+  color: var(--accent-gold);
+  font-weight: 700;
+}
+
+.roll-discarded {
+  color: var(--text-dim);
+  text-decoration: line-through;
+}
+
+.dice-result-rolls {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.dice-result-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.nat20-label {
+  color: var(--accent-gold);
+}
+
+.nat1-label {
+  color: var(--enemy-color);
+}
+
+/* Roll history */
+.dice-history {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.history-entry {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 4px 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-entry:hover {
+  background: var(--bg-card);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+.history-entry--selected {
+  background: var(--bg-card);
+  border-color: var(--border-light);
+  color: var(--text-primary);
+}
+
+.history-nat20 {
+  color: var(--accent-gold);
+}
+
+.history-nat1 {
+  color: var(--enemy-color);
+}

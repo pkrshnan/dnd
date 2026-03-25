@@ -1,0 +1,164 @@
+/* Notes panel — dark fantasy theme */
+.notes-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  background: var(--bg-dark);
+}
+
+/* Section tabs (Session / NPCs / Lore / Quests) */
+.notes-sections {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-darkest);
+}
+
+.notes-section-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 4px 5px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.notes-section-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-card);
+}
+
+.notes-section-btn--active {
+  color: var(--accent-gold);
+  border-bottom-color: var(--accent-gold);
+  background: var(--bg-card);
+}
+
+.notes-section-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Textarea wrapper */
+.notes-editor {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  padding: 8px;
+  gap: 6px;
+}
+
+.notes-textarea {
+  flex: 1;
+  resize: none;
+  background: var(--bg-darkest);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  font-family: 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.notes-textarea:focus {
+  border-color: var(--border-light);
+}
+
+.notes-textarea::placeholder {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* Footer row */
+.notes-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.notes-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notes-footer-right {
+  display: flex;
+  align-items: center;
+}
+
+/* Clear button */
+.notes-clear-btn {
+  padding: 2px 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  font-size: 11px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.notes-clear-btn:hover {
+  color: var(--text-secondary);
+  border-color: var(--border-light);
+  background: var(--bg-card);
+}
+
+.notes-clear-btn--confirm {
+  color: var(--enemy-color);
+  border-color: var(--enemy-color);
+}
+
+.notes-clear-btn--confirm:hover {
+  background: rgba(201, 76, 76, 0.12);
+}
+
+/* "Saved" flash */
+.notes-saved {
+  font-size: 11px;
+  color: var(--ally-color);
+  opacity: 0.85;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  animation: notes-saved-fade 2s ease-out forwards;
+}
+
+@keyframes notes-saved-fade {
+  0%   { opacity: 0.85; }
+  70%  { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+
+/* Word count */
+.notes-wordcount {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+/* Formatting hint */
+.notes-hint {
+  flex-shrink: 0;
+  padding: 4px 8px 6px;
+  font-size: 10px;
+  color: var(--text-dim);
+  font-style: italic;
+  border-top: 1px solid var(--border);
+  background: var(--bg-darkest);
+}
