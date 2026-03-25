@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useStore } from '../../store/useStore';
 import type { Token as TokenType } from '../../store/useStore';
 import { useDrag } from '../../hooks/useDrag';
+import { CONDITIONS, getCondition } from '../../utils/conditions';
 
 const TOKEN_SIZE = 40;
 
@@ -38,6 +39,8 @@ export function Token({ token, isActiveTurn }: Props) {
   const [activeAction, setActiveAction] = useState<MenuAction>(null);
   const [inputVal, setInputVal] = useState('');
   const [maxInputVal, setMaxInputVal] = useState('');
+  const [showConditionPicker, setShowConditionPicker] = useState(false);
+
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -45,7 +48,38 @@ export function Token({ token, isActiveTurn }: Props) {
     setActiveAction(null);
     setInputVal('');
     setMaxInputVal('');
+    setShowConditionPicker(false);
   }, []);
+
+  const handleToggleCondition = useCallback((conditionId: string) => {
+    const current = token.conditions ?? [];
+    let updated: string[];
+    if (current.includes(conditionId)) {
+      updated = current.filter((c) => c !== conditionId);
+      if (conditionId === 'exhaustion') {
+        updateToken(token.id, { conditions: updated, exhaustionLevel: undefined });
+        return;
+      }
+    } else {
+      updated = [...current, conditionId];
+    }
+    updateToken(token.id, { conditions: updated });
+  }, [token.id, token.conditions, updateToken]);
+
+  const handleExhaustionLevel = useCallback((level: number) => {
+    const current = token.conditions ?? [];
+    if (level === 0) {
+      updateToken(token.id, {
+        conditions: current.filter((c) => c !== 'exhaustion'),
+        exhaustionLevel: undefined,
+      });
+    } else {
+      const withExhaustion = current.includes('exhaustion')
+        ? current
+        : [...current, 'exhaustion'];
+      updateToken(token.id, { conditions: withExhaustion, exhaustionLevel: level });
+    }
+  }, [token.id, token.conditions, updateToken]);
 
   const handleDelete = useCallback(() => {
     removeToken(token.id);
@@ -57,6 +91,7 @@ export function Token({ token, isActiveTurn }: Props) {
     setActiveAction(null);
     setInputVal('');
     setMaxInputVal('');
+    setShowConditionPicker(false);
   }, []);
 
   const handleSetHpConfirm = useCallback(() => {
@@ -139,10 +174,13 @@ export function Token({ token, isActiveTurn }: Props) {
   // Condition display data
   const activeConditions = token.conditions ?? [];
   const displayConditions = activeConditions.filter((id) => id !== 'concentration');
+  const hasConcentration = activeConditions.includes('concentration');
   const iconRows: string[][] = [];
   for (let i = 0; i < displayConditions.length; i += 4) {
     iconRows.push(displayConditions.slice(i, i + 4));
   }
+
+  const conditionIconsTopOffset = hasHpBar ? TOKEN_SIZE + 24 : TOKEN_SIZE + 14;
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
@@ -248,6 +286,24 @@ export function Token({ token, isActiveTurn }: Props) {
               💀
             </div>
           )}
+          {/* Concentration dot */}
+          {hasConcentration && (
+            <div
+              title="Concentration: Maintaining concentration on a spell."
+              style={{
+                position: 'absolute',
+                top: 2,
+                right: 2,
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: '#c9a84c',
+                border: '1px solid rgba(0,0,0,0.5)',
+                pointerEvents: 'none',
+                zIndex: 1,
+              }}
+            />
+          )}
         </div>
 
         {/* Name label below */}
@@ -313,6 +369,50 @@ export function Token({ token, isActiveTurn }: Props) {
                 }}
               />
             )}
+          </div>
+        )}
+
+        {/* Condition icons */}
+        {iconRows.length > 0 && (
+          <div
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: conditionIconsTopOffset,
+              transform: 'translateX(-50%)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 1,
+              pointerEvents: 'none',
+            }}
+          >
+            {iconRows.map((row, rowIdx) => (
+              <div key={rowIdx} style={{ display: 'flex', gap: 1 }}>
+                {row.map((condId) => {
+                  const cond = getCondition(condId);
+                  if (!cond) return null;
+                  const tooltipText = condId === 'exhaustion' && token.exhaustionLevel
+                    ? `${cond.label} (Lv.${token.exhaustionLevel}): ${cond.desc}`
+                    : `${cond.label}: ${cond.desc}`;
+                  return (
+                    <span
+                      key={condId}
+                      title={tooltipText}
+                      style={{
+                        fontSize: 10,
+                        lineHeight: '12px',
+                        display: 'inline-block',
+                        textShadow: '0 1px 3px rgba(0,0,0,1)',
+                        filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.9))',
+                      }}
+                    >
+                      {cond.icon}
+                    </span>
+                  );
+                })}
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -456,6 +556,79 @@ export function Token({ token, isActiveTurn }: Props) {
                 onClick={() => { setActiveAction('tempHp'); setInputVal(String(token.tempHp ?? '')); }}
               >
                 Temp HP...
+              </button>
+            )}
+
+            <div style={{ height: 1, background: 'var(--border)', margin: '4px 0' }} />
+
+            {/* Conditions section */}
+            {showConditionPicker ? (
+              <div style={{ padding: '4px 0' }}>
+                <div style={{ padding: '4px 12px', fontSize: 11, color: 'var(--text-secondary)', fontWeight: 600, letterSpacing: '0.5px' }}>
+                  CONDITIONS
+                </div>
+                <div style={{ maxHeight: 240, overflowY: 'auto' }}>
+                  {CONDITIONS.map((cond) => {
+                    const isActive = activeConditions.includes(cond.id);
+                    const isExhaustion = cond.id === 'exhaustion';
+                    return (
+                      <div key={cond.id}>
+                        <button
+                          title={cond.desc}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            width: '100%',
+                            padding: '5px 12px',
+                            background: isActive ? 'rgba(255,255,255,0.06)' : 'none',
+                            border: 'none',
+                            color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+                            textAlign: 'left',
+                            fontSize: 12,
+                            cursor: 'pointer',
+                          }}
+                          onClick={() => handleToggleCondition(cond.id)}
+                        >
+                          <span style={{ fontSize: 14 }}>{cond.icon}</span>
+                          <span style={{ flex: 1 }}>{cond.label}</span>
+                          {isActive && <span style={{ color: 'var(--accent-gold)', fontSize: 12 }}>✓</span>}
+                        </button>
+                        {isExhaustion && isActive && (
+                          <div style={{ display: 'flex', gap: 3, padding: '2px 12px 4px 32px' }}>
+                            {[1, 2, 3, 4, 5, 6].map((lvl) => (
+                              <button
+                                key={lvl}
+                                onClick={() => handleExhaustionLevel(lvl)}
+                                style={{
+                                  width: 22,
+                                  height: 22,
+                                  borderRadius: 'var(--radius-sm)',
+                                  background: token.exhaustionLevel === lvl ? '#8b6914' : 'var(--bg-dark)',
+                                  border: `1px solid ${token.exhaustionLevel === lvl ? '#c9a84c' : 'var(--border-light)'}`,
+                                  color: token.exhaustionLevel === lvl ? '#c9a84c' : 'var(--text-secondary)',
+                                  fontSize: 11,
+                                  fontWeight: 600,
+                                  cursor: 'pointer',
+                                  padding: 0,
+                                }}
+                              >
+                                {lvl}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <button
+                style={menuItemStyle}
+                onClick={() => { setShowConditionPicker(true); setActiveAction(null); }}
+              >
+                Conditions...{activeConditions.length > 0 ? ` (${activeConditions.length})` : ''}
               </button>
             )}
 

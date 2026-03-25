@@ -7,8 +7,8 @@ const browser = await chromium.launch({
 
 const page = await browser.newPage();
 await page.setViewportSize({ width: 1400, height: 900 });
-await page.goto('http://localhost:5174');
-await page.waitForLoadState('networkidle');
+await page.goto('http://localhost:5174', { timeout: 60000, waitUntil: 'domcontentloaded' });
+await page.waitForTimeout(2000);
 
 // Take initial screenshot of the full app
 await page.screenshot({ path: 'docs/screenshots/dice-roller/01-app-overview.png' });
@@ -25,8 +25,8 @@ await page.screenshot({ path: 'docs/screenshots/dice-roller/02-dice-roller-open.
 const d20Btn = await page.locator('.dice-btn').filter({ hasText: 'd20' });
 await d20Btn.click();
 
-// Click "Adv" button
-const advBtn = await page.locator('.adv-btn').filter({ hasText: 'Adv' });
+// Click "Adv" button (exact match)
+const advBtn = await page.locator('.adv-btn').filter({ hasText: /^Adv$/ });
 await advBtn.click();
 
 // Click Roll button
