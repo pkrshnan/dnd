@@ -209,3 +209,262 @@
   color: var(--enemy-color);
   border-color: var(--enemy-dim);
 }
+
+/* ===================== Spell Slot & Concentration additions ===================== */
+
+/* Restructure initiative-entry to be flex-column when expanded */
+.initiative-entry {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.initiative-entry-main {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-height: 52px;
+}
+
+/* Right-side button group */
+.entry-right-buttons {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Small action button (concentration ⊙, spell toggle 🔮) */
+.entry-action-btn {
+  padding: 0 7px;
+  background: none;
+  color: var(--text-dim);
+  font-size: 13px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
+  border: none;
+  cursor: pointer;
+}
+
+.entry-action-btn:hover {
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.04);
+}
+
+.spell-toggle-btn.expanded {
+  color: var(--accent-gold);
+}
+
+.spell-toggle-btn.has-slots {
+  color: var(--text-secondary);
+}
+
+.spell-toggle-btn.has-slots.expanded {
+  color: var(--accent-gold);
+}
+
+/* Concentration badge */
+.concentration-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 5px;
+  background: rgba(201,168,76,0.15);
+  border: 1px solid var(--accent-gold-dim);
+  border-radius: 3px;
+  color: var(--accent-gold);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.15s;
+  line-height: 1.4;
+}
+
+.concentration-badge:hover {
+  background: rgba(201,168,76,0.28);
+}
+
+/* ===================== Spell Slot Panel ===================== */
+
+.spell-slot-panel {
+  background: rgba(0,0,0,0.25);
+  border-top: 1px solid var(--border);
+  padding: 8px 10px;
+}
+
+.spell-slot-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.spell-slot-empty-hint {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 4px 0;
+}
+
+.spell-level-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spell-level-label {
+  font-size: 10px;
+  font-variant: small-caps;
+  color: var(--accent-gold);
+  width: 52px;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+
+.spell-dots {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.spell-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s, box-shadow 0.15s;
+  flex-shrink: 0;
+}
+
+.spell-dot:hover {
+  transform: scale(1.25);
+}
+
+.spell-slot-count {
+  font-size: 10px;
+  color: var(--text-secondary);
+  min-width: 26px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ===================== Spell Configure Form ===================== */
+
+.spell-configure-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.spell-configure-preset-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spell-configure-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.spell-configure-select {
+  flex: 1;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 3px 6px;
+  font-size: 11px;
+}
+
+.spell-configure-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+}
+
+.spell-configure-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.spell-configure-slot-label {
+  font-size: 9px;
+  font-variant: small-caps;
+  color: var(--accent-gold);
+  letter-spacing: 0.3px;
+}
+
+.spell-configure-input {
+  width: 100%;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 2px 4px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.spell-configure-input:focus {
+  outline: none;
+  border-color: var(--accent-gold-dim);
+}
+
+/* ===================== Spell action buttons ===================== */
+
+.spell-slot-actions {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.spell-btn {
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  cursor: pointer;
+  border: 1px solid var(--border-light);
+  background: transparent;
+  color: var(--text-secondary);
+  transition: background 0.15s, color 0.15s;
+}
+
+.spell-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.spell-btn-configure {
+  color: var(--accent-gold);
+  border-color: var(--accent-gold-dim);
+}
+
+.spell-btn-configure:hover {
+  background: rgba(201,168,76,0.12);
+  color: var(--accent-gold);
+}
+
+.spell-btn-rest {
+  color: var(--text-secondary);
+}
+
+.spell-btn-done {
+  align-self: flex-start;
+  background: var(--ally-dim);
+  color: var(--ally-color);
+  border-color: var(--ally-dim);
+}
+
+.spell-btn-done:hover {
+  background: var(--ally-color);
+  color: var(--bg-darkest);
+}
